@@ -1,20 +1,37 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import login from "../../assets/images/login/login.svg";
 import { useContext } from "react";
 import { AuthContext } from "../../providers/AuthProviders";
 
 export default function Login() {
   const { signIn } = useContext(AuthContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const from = location.state?.from?.pathname || "/";
 
   const handleLogin = (event) => {
     event.preventDefault();
     const email = event.target.email.value;
     const password = event.target.password.value;
-    console.log(email, password);
+    // console.log(email, password);
     signIn(email, password)
       .then((result) => {
         const user = result.user;
-        console.log(user);
+        const loggedUser = { email: user.email };
+        // console.log(user, loggedUser);
+
+        fetch(`http://localhost:5000/jwt`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(loggedUser),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("jwt Response", data);
+            //! set token in localStorage which is not best practice
+            localStorage.setItem("car-doctor-token", data.token);
+            navigate(from, { replace: true });
+          });
       })
       .catch((error) => {
         console.log(error);
@@ -68,7 +85,7 @@ export default function Login() {
               </div>
             </form>
             <p className="my-4 text-center">
-              New user ?{" "}
+              New user ?
               <Link to="/signup" className="text-orange-500">
                 Please Signup
               </Link>
