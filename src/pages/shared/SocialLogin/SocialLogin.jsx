@@ -1,9 +1,26 @@
+import { useContext } from "react";
+import { AuthContext } from "../../../providers/AuthProviders";
+
 const SocialLogin = () => {
+  const { googleSignin } = useContext(AuthContext);
+  const handleGoogleSignin = () => {
+    googleSignin()
+      .then((result) => {
+        console.log(result.user);
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <div>
       <div className="divider">OR</div>
       <div className="text-center">
-        <button className="btn btn-circle btn-outline">G</button>
+        <button
+          onClick={handleGoogleSignin}
+          className="btn btn-circle btn-outline"
+        >
+          G
+        </button>
       </div>
     </div>
   );

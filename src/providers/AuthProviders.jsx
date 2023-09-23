@@ -1,15 +1,18 @@
 import { createContext, useEffect, useState } from "react";
 import {
+  GoogleAuthProvider,
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
 } from "firebase/auth";
 import app from "../firebase/firebase.config";
 
 export const AuthContext = createContext();
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 const AuthProviders = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,6 +27,11 @@ const AuthProviders = ({ children }) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
 
+  const googleSignin = () => {
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider);
+  };
+
   const logOut = () => {
     setLoading(true);
     return signOut(auth);
@@ -32,8 +40,25 @@ const AuthProviders = ({ children }) => {
   useEffect(() => {
     const unsubscribed = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      // console.log("current User : ", currentUser);
+      console.log("current User : ", currentUser);
       setLoading(false);
+      if (currentUser && currentUser.email) {
+        const loggedUser = { email: currentUser.email };
+        fetch(`http://localhost:5000/jwt`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(loggedUser),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("jwt Response", data);
+            //! set token in localStorage which is not best practice
+            localStorage.setItem("car-doctor-token", data.token);
+            // navigate(from, { replace: true });
+          });
+      } else {
+        localStorage.removeItem("car-doctor-token");
+      }
     });
     return () => {
       return unsubscribed();
@@ -45,6 +70,7 @@ const AuthProviders = ({ children }) => {
     loading,
     createUser,
     signIn,
+    googleSignin,
     logOut,
   };
   return (
