@@ -7,7 +7,7 @@ const Booking = () => {
   const [bookings, setBookings] = useState([]);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const url = `http://localhost:5000/bookings?email=${user?.email}`;
+  const url = `https://car-doctor-server-aqmau35c6-nayan-suters-projects.vercel.app/bookings?email=${user?.email}`;
 
   useEffect(() => {
     fetch(url, {
@@ -29,9 +29,12 @@ const Booking = () => {
   const handleDelete = (id) => {
     const proceed = confirm("Sure to delete??");
     if (proceed) {
-      fetch(`http://localhost:5000/bookings/${id}`, {
-        method: "DELETE",
-      })
+      fetch(
+        `https://car-doctor-server-aqmau35c6-nayan-suters-projects.vercel.app/bookings/${id}`,
+        {
+          method: "DELETE",
+        }
+      )
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
@@ -45,11 +48,14 @@ const Booking = () => {
   };
 
   const handleConfirm = (id) => {
-    fetch(`http://localhost:5000/bookings/${id}`, {
-      method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ status: "confirm" }),
-    })
+    fetch(
+      `https://car-doctor-server-aqmau35c6-nayan-suters-projects.vercel.app/bookings/${id}`,
+      {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status: "confirm" }),
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

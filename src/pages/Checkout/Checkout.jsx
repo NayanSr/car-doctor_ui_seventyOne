@@ -26,13 +26,16 @@ const Checkout = () => {
       img,
     };
     console.log(booking);
-    fetch("http://localhost:5000/bookings", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(booking),
-    })
+    fetch(
+      "https://car-doctor-server-aqmau35c6-nayan-suters-projects.vercel.app/bookings",
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(booking),
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
